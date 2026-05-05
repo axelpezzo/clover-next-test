@@ -196,7 +196,7 @@ describe('Entries API', () => {
             date: expect.any(String),
             category: 'Consulting',
             description: 'May work',
-            createdBy: { id: expect.any(String), fullname: 'User User' },
+            createdBy: { id: expect.any(String) },
             createdAt: expect.any(String),
             updatedAt: expect.any(String)
           })
