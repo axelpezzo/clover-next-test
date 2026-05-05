@@ -2,7 +2,7 @@ import { useState, createContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faList } from '@fortawesome/free-solid-svg-icons';
 
 import useLocalStorage from '../hooks/core/useLocalStorage';
 
@@ -35,6 +35,12 @@ export const AppProvider = props => {
         key: 'home',
         icon: <FontAwesomeIcon icon={faHome} />,
         authorizedRoles: ['admin', 'designer', 'manufacturer', 'owner']
+      },
+      {
+        label: <Link to="/entries">Movimenti</Link>,
+        key: 'entries',
+        icon: <FontAwesomeIcon icon={faList} />,
+        authorizedRoles: ['admin', 'user']
       }
     ]
   };
