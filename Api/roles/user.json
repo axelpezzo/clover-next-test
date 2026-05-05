@@ -5,5 +5,11 @@
   },
   "companies": {
     "read": ["*"]
+  },
+  "entries": {
+    "create": ["*"],
+    "read": ["*"],
+    "update": ["*"],
+    "delete": ["*"]
   }
 }
