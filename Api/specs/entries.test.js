@@ -239,6 +239,19 @@ describe('Entries API', () => {
             data: '/amount'
           })
         ));
+
+    test('Requires auth', () =>
+      agent
+        .post(`/companies/${company1.id}/entries`)
+        .send({ type: 'income', amount: 100, date: '2026-05-04', category: 'Test' })
+        .expect(401)
+        .then(res =>
+          expect(res.body).toStrictEqual({
+            error: 401,
+            message: 'Unauthorized',
+            data: {}
+          })
+        ));
   });
 
   describe('GET /companies/:id/entries/:id', () => {
@@ -274,6 +287,26 @@ describe('Entries API', () => {
             data: {}
           })
         ));
+
+    test('Wrong entry ID should return ValidationError', () =>
+      agent
+        .get(`/companies/${company1.id}/entries/1234`)
+        .set('Cookie', `accessToken=${adminToken}`)
+        .expect(400)
+        .then(res => expect(res.body).toEqual(expect.objectContaining({ error: 200 }))));
+
+    test('Inexistent entry should return NotFound', () =>
+      agent
+        .get(`/companies/${company1.id}/entries/507f1f77bcf86cd799439099`)
+        .set('Cookie', `accessToken=${adminToken}`)
+        .expect(404)
+        .then(res =>
+          expect(res.body).toStrictEqual({
+            error: 404,
+            message: 'Not found',
+            data: {}
+          })
+        ));
   });
 
   describe('PATCH /companies/:id/entries/:id', () => {
@@ -297,6 +330,47 @@ describe('Entries API', () => {
             updatedAt: expect.any(String)
           })
         ));
+
+    test('Requires auth', () =>
+      agent
+        .patch(`/companies/${company1.id}/entries/${expenseEntry.id}`)
+        .send({ amount: 100 })
+        .expect(401)
+        .then(res =>
+          expect(res.body).toStrictEqual({
+            error: 401,
+            message: 'Unauthorized',
+            data: {}
+          })
+        ));
+
+    test('Validate update body - invalid type', () =>
+      agent
+        .patch(`/companies/${company1.id}/entries/${expenseEntry.id}`)
+        .set('Cookie', `accessToken=${adminToken}`)
+        .send({ type: 'invalid' })
+        .expect(400)
+        .then(res =>
+          expect(res.body).toStrictEqual({
+            error: 200,
+            message: 'Validation error',
+            data: '/type'
+          })
+        ));
+
+    test('Does not update entries from another company', () =>
+      agent
+        .patch(`/companies/${company1.id}/entries/${otherCompanyEntry.id}`)
+        .set('Cookie', `accessToken=${adminToken}`)
+        .send({ amount: 100 })
+        .expect(404)
+        .then(res =>
+          expect(res.body).toStrictEqual({
+            error: 404,
+            message: 'Not found',
+            data: {}
+          })
+        ));
   });
 
   describe('DELETE /companies/:id/entries/:id', () => {
@@ -313,5 +387,30 @@ describe('Entries API', () => {
             .set('Cookie', `accessToken=${adminToken}`)
             .expect(404);
         }));
+
+    test('Requires auth', () =>
+      agent
+        .delete(`/companies/${company1.id}/entries/${expenseEntry.id}`)
+        .expect(401)
+        .then(res =>
+          expect(res.body).toStrictEqual({
+            error: 401,
+            message: 'Unauthorized',
+            data: {}
+          })
+        ));
+
+    test('Does not delete entries from another company', () =>
+      agent
+        .delete(`/companies/${company1.id}/entries/${otherCompanyEntry.id}`)
+        .set('Cookie', `accessToken=${adminToken}`)
+        .expect(404)
+        .then(res =>
+          expect(res.body).toStrictEqual({
+            error: 404,
+            message: 'Not found',
+            data: {}
+          })
+        ));
   });
 });
