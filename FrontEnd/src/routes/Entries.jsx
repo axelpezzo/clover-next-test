@@ -169,6 +169,14 @@ const Entries = () => {
     }
   ];
 
+  if (!companyId) {
+    return (
+      <ContentPanel title="Movimenti">
+        <Alert type="warning" message="Nessuna azienda associata all'account." showIcon />
+      </ContentPanel>
+    );
+  }
+
   return (
     <ContentPanel
       title="Movimenti"

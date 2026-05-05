@@ -34,7 +34,8 @@ module.exports.create = async ({ body }, { locals: { company, user } }, next) =>
         name: company.name
       },
       createdBy: {
-        id: user.id
+        id: user.id,
+        fullname: user.fullname
       }
     });
 
